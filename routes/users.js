@@ -37,19 +37,19 @@ router.post('/login',function(req,res){
 
 
 router.post('/registrarse',function(req,res){
-	if(req.body.password!=req.body.reppass){res.send('Error 1');
-	}else{
-		User.findOne({$or:[{'username': req.body.username},{'email':req.body.email},{'telefono':req.body.telefono}]},
-		'username email telefono', function (err, resultado) {
-			if (err){res.send('Error 1')}else{
+	if(req.body.password!=req.body.reppass){res.send('Error 2');//No coincide
+}else{
+        User.findOne({$or:[{'username': req.body.username},{'email':req.body.correo},{'telefono':req.body.telefono}]},
+		'username correo telefono', function (err, resultado) {
+			if (err){res.send('Error 1')}else{ //error de red
                 if(resultado!=null){
-				res.send('Error 2');
+				res.send('Error 3');//Ya existe
                 }else{
                     var newUser = new User({
                     nombre:req.body.nombre,
                     ape:req.body.ape,
                     username:req.body.username,
-                    correo:req.body.email,
+                    correo:req.body.correo,
                     telefono:req.body.telefono,
                     password:req.body.password,
                     token:cadenaAleatoria(),
@@ -57,11 +57,11 @@ router.post('/registrarse',function(req,res){
                     fecha:Date.now()
                     });
                     User.createUser(newUser, function(err, user){
-                        if(err){res.send('Error 1')}else{res.send('ok');}   
+                        if(err){res.send('Error 1')}else{res.send('ok');}   //todo bien 
                     });
                 }
             }			
-		});	
+		});		
 	}
 });
 

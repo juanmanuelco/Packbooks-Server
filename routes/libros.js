@@ -13,9 +13,9 @@ router.post('/subida',function(req,res){
     var editorial=req.body.editorial;
     var publicacion=req.body.publicacion;
     var categoria=req.body.categoria;
-    var por=req.body.subidopor;
+    var por=req.body.subidoPor;
     var tipo=req.body.tipo;
-
+    console.log(req.body)
     var storage = multer.diskStorage({
 	destination: function (req, file, cb) {cb(null, 'public/'+tipo)},
         filename: function (req, file, cb) { cb(null, por+'.pdf');}

@@ -37,7 +37,7 @@ router.post('/subida',function(req,res){
                         fechaPub:publicacion,
                         fechaSub:Date.now(),
                         categoria:categoria,
-                        subidoPor:subidopor,
+                        subidoPor:por,
                         libro:result.url,
                         tipo:tipo
                     });

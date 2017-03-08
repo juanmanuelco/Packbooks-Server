@@ -18,7 +18,7 @@ router.post('/subida',function(req,res){
 
     var storage = multer.diskStorage({
 	destination: function (req, file, cb) {cb(null, 'public/'+tipo)},
-        filename: function (req, file, cb) { cb(null, subidopor+'.pdf');}
+        filename: function (req, file, cb) { cb(null, por+'.pdf');}
     });
 
     var upload = multer({ storage: storage, fileFilter:function(req, file, cb){
@@ -27,7 +27,7 @@ router.post('/subida',function(req,res){
     upload(req, res, function (err) {
         if(err){res.send('Error 1')}     
         else{
-            cloudinary.uploader.upload('public/'+tipo+'/'+subidopor+'.pdf',
+            cloudinary.uploader.upload('public/'+tipo+'/'+por+'.pdf',
                 function(result) {
                     var libroSchema=new Libro({
                         id:nombre+'-'+por+'-'+Date.now(),
@@ -42,9 +42,9 @@ router.post('/subida',function(req,res){
                         tipo:tipo
                     });
                     libroSchema.save(function(err){
-                        if(err){res.send('Error 1')}else{'ok'}
+                        if(err){res.send('Error 1')}else{res.send('ok')}
                     })
-                },{public_id: tipo+'/'+nombre+'-'+subidopor+'-'+Date.now()+'.pdf'} 
+                },{public_id: tipo+'/'+nombre+'-'+por+'-'+Date.now()+'.pdf'} 
             )
         } 
     });

@@ -30,7 +30,7 @@ router.post('/subida',function(req,res){
             cloudinary.uploader.upload('public/'+tipo+'/'+subidopor+'.pdf',
                 function(result) {
                     var libroSchema=new Libro({
-                        id:nombre+'-'+subidopor+'-'+Date.now(),
+                        id:nombre+'-'+por+'-'+Date.now(),
                         nombre: nombre,
                         autor:autor,
                         editorial:editorial,

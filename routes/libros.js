@@ -7,8 +7,7 @@ var multer = require('multer'),
 
 cloudinary.config({cloud_name: 'packbooks', api_key: '422278622363686', api_secret: 'JCX3Zpg0p8LkG-h6IiBpRZqZOjo'});
 
-router.post('/libros',function(req,res){
-    var id=req.body.id;
+router.post('/subida',function(req,res){
     var nombre=req.body.nombre;
     var autor=req.body.autor;
     var editorial=req.body.editorial;
@@ -24,7 +23,7 @@ router.post('/libros',function(req,res){
 
     var upload = multer({ storage: storage, fileFilter:function(req, file, cb){
             if(file.mimetype=='application/pdf'){cb(null, true);}else{cb(null, false);}
-        }}).single('foto');
+        }}).single('book');
     upload(req, res, function (err) {
         if(err){res.send('Error 1')}     
         else{

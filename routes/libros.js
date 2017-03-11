@@ -81,7 +81,7 @@ router.post('/subida',function(req,res){
                         tipo:req.body.tipo
                     });
                     libroSchema.save(function(err){
-                        if(err){res.send('Error 1')}else{res.send('ok')}
+                        if(err){res.send('Error 1')}else{res.send('Libro subido en: '+result.url)}
                     })
             },{public_id: req.body.tipo+'/'+req.body.por});
         }

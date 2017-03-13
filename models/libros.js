@@ -5,7 +5,7 @@ var LibroSchema=mongoose.Schema({
     nombre:{type:String},
     autor:{type:String},
     editorial:{type:String},
-    fechaPub:{type:Date},
+    fechaPub:{type:String},
     fechaSub:{type:Date},
     categoria:{type:String},
     subidoPor:{type:String},

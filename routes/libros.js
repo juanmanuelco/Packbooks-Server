@@ -28,7 +28,7 @@ router.post('/subida',function(req,res){
                         autor:req.body.autor,
                         editorial:req.body.editorial,
                         fechaPub:req.body.publicacion,
-                        fechaSub:Date.now(),
+                        fechaSub:new Date(),
                         categoria:req.body.categoria,
                         subidoPor:req.body.por,
                         libro:result.url,
@@ -37,15 +37,66 @@ router.post('/subida',function(req,res){
                     libroSchema.save(function(err){
                         if(err){res.send('Error 1')}else{res.send('Libro subido en: '+result.url)}
                     })
-            },{public_id: req.body.tipo+'/'+req.body.por});
+            },{public_id: req.body.tipo+'/'+req.body.nombre+'-'+req.body.autor+'-'+req.body.publicacion});
         }
     });
 });
+function revisarNulo(busqueda){return (busqueda==undefined || busqueda==null || busqueda=='');}
 
-router.get('/obtener-publicos',function(req,res){
-    Libro.find().exec(function(err,resp){
-        res.send(resp);
-    });
+router.post('/buscador',function(req,res){
+    var usuario=req.body.por;
+    var tipo='privado';
+    var query;
+    var datoaBuscar=req.body.busqueda;
+    if(revisarNulo(usuario)){ tipo='publico'}
+    var nuevoArray=new Array();
+    if(!revisarNulo(datoaBuscar)){
+        var palabras=datoaBuscar.split(" ");
+        for(var i=0;i<palabras.length;i++){if(palabras[i]!=''){nuevoArray.push(new RegExp (palabras[i],'i'))}}
+    }
+    if(nuevoArray.length<1){
+        
+        if(tipo=='publico'){query={'tipo':'publico'}}
+        else{query={'tipo':'privado','subidoPor':usuario};}
+    }else{
+        if(tipo=='publico'){
+            query={$and:[{'tipo':'publico'},
+                    {$or:[{nombre:{$in:nuevoArray}},
+                    {autor:{$in:nuevoArray}},
+                    {editorial:{$in:nuevoArray}},
+                    {fechaPub:{$in:nuevoArray}},
+                    {categoria:{$in:nuevoArray}}
+                ]}
+            ]}; 
+        }else{
+            
+            query={$and:[{'tipo':'publico'},{'subidoPor':usuario},
+                {$or:[{nombre:{$in:nuevoArray}},
+                {autor:{$in:nuevoArray}},
+                {editorial:{$in:nuevoArray}},
+                {fechaPub:{$in:nuevoArray}},
+                {categoria:{$in:nuevoArray}}
+            ]}
+        ]}; 
+        }
+    }
+    var listaResultados=new Array();
+    Libro.find().where(query).exec(function(err,resp){
+    if(resp==''){res.send("nada")}
+    else{
+        for(var j=0;j<resp.length;j++){
+            listaResultados.push({
+                'nombre':resp[j].nombre,
+                'autor':resp[j].autor,
+                'editorial':resp[j].editorial,
+                'fechaPub':resp[j].fechaPub,
+                'categoria':resp[j].categoria,
+                'libro':resp[j].libro
+            })
+        }
+        res.send(listaResultados);
+		}
+	});
 });
 
 module.exports = router;

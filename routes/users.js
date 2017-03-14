@@ -47,6 +47,7 @@ router.post('/registrarse',function(req,res){
         User.findOne({$or:[{'username': req.body.username},{'email':req.body.correo},{'telefono':req.body.telefono}]},
 		'username correo telefono', function (err, resultado) {
 			if (err){res.send('Error 1')}else{
+                console.log(resultado)
                 if(resultado!=null){
 				res.send('Error 3');//Ya existe
                 }else{
@@ -160,6 +161,38 @@ router.post('/recuperar',function(req,res){
     });
 });
 
+router.post('/eliminar',function(req,res){
+    var usuario=req.body.user;
+    User.findOneAndRemove().where({'username':usuario}).exec(function(err){
+        if(err){res.send('Error 1')}else{
+            res.send('ok');
+        }
+    });
+});
+router.post('/cambiar_contra',function(req,res){
+    console.log(req.body)
+    var pass1=req.body.pass;
+    var pass2=req.body.pass2;
+    var user=req.body.user;
+    if(pass1==pass2){
+    bcrypt.genSalt(10, function (err, salt) {
+        if(err){res.send('Error 1')}else{
+            bcrypt.hash(req.body.pass, salt, function (err, hash) {
+                if(err){res.send('Error 1')}else{
+                    User.findOneAndUpdate({ username: user }, {password: hash,	token: cadenaAleatoria()
+                    }, function (err) {
+                        if (err){res.send('Error 1')}else{
+                            res.send('ok');
+                        }
+                    });
+                }
+            });
+        }
+    });
+    }else{
+        res.send('Error 2');
+    }
+});
 
 
 module.exports = router;

@@ -9,6 +9,7 @@ cloudinary.config({cloud_name: 'packbooks', api_key: '422278622363686', api_secr
 
 //Crea una oferta__________________________________________________________________________
 router.post('/subida',function(req,res){
+    console.log(req.body);
     var storage = multer.diskStorage({
     destination: function (req, file, cb) {cb(null, 'public/'+req.body.tipo)},
         filename: function (req, file, cb) {cb(null, req.body.por+'.pdf')}
@@ -94,6 +95,7 @@ router.post('/buscador',function(req,res){
                 'libro':resp[j].libro
             })
         }
+        console.log(listaResultados)
         res.send(listaResultados);
 		}
 	});

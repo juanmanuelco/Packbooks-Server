@@ -83,22 +83,47 @@ router.post('/buscador',function(req,res){
     }
     var listaResultados=new Array();
     Libro.find().where(query).exec(function(err,resp){
-    if(resp==''){res.send("nada")}
-    else{
-        for(var j=0;j<resp.length;j++){
-            listaResultados.push({
-                'nombre':resp[j].nombre,
-                'autor':resp[j].autor,
-                'editorial':resp[j].editorial,
-                'fechaPub':resp[j].fechaPub,
-                'categoria':resp[j].categoria,
-                'libro':resp[j].libro
-            })
-        }
+        if(err){res.send('Error 1')}else{
+            if(resp==''){res.send("nada")}
+        else{
+            for(var j=0;j<resp.length;j++){
+                listaResultados.push({
+                    'nombre':resp[j].nombre,
+                    'autor':resp[j].autor,
+                    'editorial':resp[j].editorial,
+                    'fechaPub':resp[j].fechaPub,
+                    'categoria':resp[j].categoria,
+                    'libro':resp[j].libro
+                })
+            }
         console.log(listaResultados)
         res.send(listaResultados);
-		}
+        }
+        }
 	});
+});
+
+router.post('/categoria',function(req,res){
+    var categoria=req.body.categoria;
+    Libro.find().where({'categoria':categoria}).exec(function(err,resp){
+        if(err){res.send('Error 1')}else{
+            if(resp){
+                for(var j=0;j<resp.length;j++){
+                    listaResultados.push({
+                        'nombre':resp[j].nombre,
+                        'autor':resp[j].autor,
+                        'editorial':resp[j].editorial,
+                        'fechaPub':resp[j].fechaPub,
+                        'categoria':resp[j].categoria,
+                        'libro':resp[j].libro
+                    })
+                }
+                res.send(listaResultados);
+            }else{
+                res.send('nada')
+            }
+        }
+    });
 });
 
 module.exports = router;

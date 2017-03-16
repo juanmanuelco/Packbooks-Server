@@ -63,15 +63,19 @@ router.post('/registrarse',function(req,res){
                     fecha:Date.now()
                     });
                     User.createUser(newUser, function(err, user){
+                        if(err){res.send('Error 1')}
+                        else{
                             var mailOptions = {
                                 from: 'Packbooks',to: user.correo,
                                 subject: 'Token de confirmación de su cuenta',
                                 text: 'Para terminar de crear su cuenta ingrese este token : ' + user.token
                             }
                             smtpTransport.sendMail(mailOptions, function (err, resp) {
-                                if(err){res.send('Error de base de datos')}else
-                                    {res.send('ok')}
+                                if (err){res.send('Error 1')}else{
+                                    res.send('ok')
+                                }
                             });
+                        }
                     });
                 }
             }			

@@ -69,8 +69,8 @@ router.post('/registrarse',function(req,res){
                                 text: 'Para terminar de crear su cuenta ingrese este token : ' + user.token
                             }
                             smtpTransport.sendMail(mailOptions, function (err, resp) {
-                                    console.log('Correo enviado')
-                                    res.send('ok')
+                                if(err){res.send('Error de base de datos')}else
+                                    {res.send('ok')}
                             });
                     });
                 }

@@ -72,7 +72,6 @@ router.post('/registrarse',function(req,res){
                             }
                             smtpTransport.sendMail(mailOptions, function (err, resp) {
                                 if (err){res.send('Error 1')}else{
-                                    console.log(resp);
                                     console.log('Correo enviado')
                                     res.send('ok')
                                 }

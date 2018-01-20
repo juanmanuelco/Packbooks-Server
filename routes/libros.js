@@ -7,7 +7,7 @@ var multer = require('multer'),
 
 cloudinary.config({cloud_name: 'packbooks', api_key: '422278622363686', api_secret: 'JCX3Zpg0p8LkG-h6IiBpRZqZOjo'});
 
-//Crea una oferta__________________________________________________________________________
+
 router.post('/subida',function(req,res){
     console.log(req.body);
     var storage = multer.diskStorage({

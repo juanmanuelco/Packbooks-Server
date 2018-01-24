@@ -126,4 +126,7 @@ router.post('/categoria',function(req,res){
     });
 });
 
+router.get('/subir-libro', (req,res)=>{
+    res.render('subir-libro')
+})
 module.exports = router;

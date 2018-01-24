@@ -4,6 +4,7 @@ var bodyParser = require('body-parser');
 var bcrypt = require('bcryptjs');
 var mongoose = require('mongoose');
 var User = require('./models/user');
+exphbs = require('express-handlebars')
 var path=require('path');
 
 mongoose.connect('mongodb://Admin:Abc123.....@ds159997.mlab.com:59997/packbooks', { server: { reconnectTries: Number.MAX_VALUE } });
@@ -18,7 +19,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
+//La página estática sirve para reciclar elementos
+app.engine('handlebars', exphbs({ defaultLayout: 'estatico' }));
+app.set('view engine', 'handlebars');
 app.use('/', routes);
 app.use('/users', users);
 app.use('/libros', libros);

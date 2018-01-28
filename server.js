@@ -1,31 +1,82 @@
-var express = require('express');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var bcrypt = require('bcryptjs');
-var mongoose = require('mongoose');
-var User = require('./models/user');
+//Instalamos las dependencias__________________________________________________________________________________________
+cookieParser = require('cookie-parser')
+bodyParser = require('body-parser')
 exphbs = require('express-handlebars')
-var path=require('path');
+expressValidator = require('express-validator')
+flash = require('connect-flash')
+session = require('express-session')
+path = require('path')
+passport = require('passport')
+LocalStrategy = require('passport-local').Strategy
+mongoose = require('mongoose')
+express = require('express')
+servidor = express()
 
-mongoose.connect('mongodb://Admin:Abc123.....@ds159997.mlab.com:59997/packbooks', { server: { reconnectTries: Number.MAX_VALUE } });
-var routes = require('./routes/index');
-var users = require('./routes/users');
-var libros = require('./routes/libros');
+//Establecemos el puerto de conexión web
+puerto=3000;
+http = require('http').Server(servidor)
+port = process.env.PORT || puerto
 
-var app = express();
+mongoose.connect('mongodb://Admin:Abc123.....@ds159997.mlab.com:59997/packbooks',{ server: { reconnectTries: Number.MAX_VALUE } });
 
-app.set('views', path.join(__dirname, 'views'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+//Establecemos las rutas para cada uso
+routes = require('./rutas/index')
+rutaUsuario=require('./rutas/users')
+rutaLibro=require('./rutas/libro')
+
+//Definimos que se usará tecnología hbs para modificar la vista de una página
+servidor.set('views', path.join(__dirname, 'views'));
+
 //La página estática sirve para reciclar elementos
-app.engine('handlebars', exphbs({ defaultLayout: 'estatico' }));
-app.set('view engine', 'handlebars');
-app.use('/', routes);
-app.use('/users', users);
-app.use('/libros', libros);
+servidor.engine('handlebars', exphbs({ defaultLayout: 'estatico' }));
+servidor.set('view engine', 'handlebars');
+
+//Permitimos el reconocimiento de JSON en el sistema 
+servidor.use(bodyParser.json());
+servidor.use(bodyParser.urlencoded({ extended: false }));
+servidor.use(cookieParser());
+
+//Aqui se define donde estarán los estilos y scripts tanto globales como modulares
+servidor.use(express.static(path.join(__dirname, 'recursos')));
+
+//Con esto nos aseguramos que se usen sesiones e inicios de sesión con encriptación
+servidor.use(session({ secret: 'secret', saveUninitialized: true, resave: true }));
+servidor.use(passport.initialize());
+servidor.use(passport.session());
+
+//Usando esta API se puede validar campos desde ambos lados (Cliente- Servidor)
+servidor.use(expressValidator({
+    errorFormatter: (param, msg, value)=>{
+        var namespace = param.split('.'), root = namespace.shift(), formParam = root;
+        while (namespace.length) { formParam += '[' + namespace.shift() + ']'; }
+        return { param: formParam, msg: msg, value: value };
+    }
+}));
+
+//Es necesario el poder enviar mensajes automáticos desde el servidor
+servidor.use(flash());
+
+//Establecemos variables globales para el envío de datos
+servidor.use((req, res, next)=>{
+    res.locals.success_msg = req.flash('success_msg')
+    res.locals.error_msg = req.flash('error_msg')
+    res.locals.error = req.flash('error')
+    res.locals.user = req.user || null;
+    next()
+});
+
+//usamos las rutas creadas anteriormente
+servidor.use('/', routes)
+servidor.use('/users',rutaUsuario)
+servidor.use('/libros', rutaLibro)
+
+//Controlamos el error de página no encontrada
+servidor.use((req, res) => { res.status('404'); res.render('400') });
+
+//Controlamos el error de fallos en el servidor
+servidor.use((err, req, res, next) => { res.status(500); res.render('500', { error: err }) });
+
+//Inicializamos el servidor
+http.listen(port);
 
 
-app.set('port', (process.env.PORT || 3000));
-app.listen(app.get('port'), function(){console.log('Server started on port '+app.get('port'));});

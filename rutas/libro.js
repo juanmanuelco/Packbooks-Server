@@ -118,33 +118,6 @@ router.post('/buscador',function(req,res){
         }
 	});
 });
-<<<<<<< HEAD
-
-=======
-router.post('/mios', (req,res)=>{
-    Libro.find().where({subidoPor:req.body.por}).exec((error, libros)=>{
-        if(error)
-            res.send('Error 1')
-        else{
-            if(libros==null)
-                res.send('Error 2')
-            else
-                res.send(libros)
-        }
-    })
-})
-router.post('/eliminacion', (req,res)=>{
-    Libro.findOneAndRemove({id: req.body.id}, (error, respuesta)=>{
-        if(error)
-            res.send("Error 1")
-        else{
-            res.send(respuesta)
-        }       
-    })
-})
-
-/*
->>>>>>> b21af99870436ecdf88292ac09e97d476a534b73
 router.post('/categoria',(req,res)=>{
     categoria=req.body.categoria;
     Libro.find().where({$and:[{'categoria':categoria},{tipo:'Publico'}]}).exec((err,resp)=>{

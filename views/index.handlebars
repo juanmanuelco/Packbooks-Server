@@ -15,16 +15,25 @@
                 </tr>
                 {{#if usuario}}{{#each usuario}}
                 <tr>
-                    <th>{{this.nombre}}</th>
-                    <th>{{this.ape}}</th>
-                    <th>{{this.username}}</th>
-                    <th>{{this.correo}}</th>
-                    <th>{{this.telefono}}</th>
-                    <th><button class="btn btn-primary">Modificar</button></th>
-                    <th><button class="btn btn-danger">Eliminar</button></th>
+                    <td>{{this.nombre}}</td>
+                    <td>{{this.ape}}</td>
+                    <td>{{this.username}}</td>
+                    <td>{{this.correo}}</td>
+                    <td>{{this.telefono}}</td>
+                    <td>
+                        <div>
+                            <button onclick="editarUsuario(event,this)" class="btn btn-primary">Modificar</button>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <button onclick="deleteUser(event,this)" class="btn btn-danger">Eliminar</button>
+                        </div>
+                    </td>
                 </tr>
                 {{/each}}{{/if}}
             </table>
         </div>
     </div>
 </div>
+<script src="../publico/scripts/admin.js"></script>

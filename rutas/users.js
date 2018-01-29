@@ -5,6 +5,15 @@ var bcrypt = require('bcryptjs');
 var User = require('../modelos/user');
 var nodemailer = require('nodemailer');
 
+
+
+
+router.get('/loginadmin', function(req, res){
+	res.render('loginadmin');
+});
+
+
+
 function cadenaAleatoria() {
     longitud = 16
     caracteres = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -90,7 +99,6 @@ router.post('/registrarse',(req,res)=>{
 	}
 });
 router.post('/confirmar',(req,res)=>{
-
     User.findOne().where({correo:req.body.correo}).exec((err,resp)=>{
         if(err)
             res.send('Error 1')       
@@ -209,4 +217,48 @@ router.post('/cambiar_contra',(req,res)=>{
     }else
         res.send('Error 2');
 });
+
+passport.use(new LocalStrategy(
+	function(username, password, done) {
+	 User.getUserByUsername(username, function(err, user){
+		 if(err) throw err;
+		 if(!user){
+			 return done(null, false, {message: 'Unknown User'});
+		 }
+  
+		 User.comparePassword(password, user.password, function(err, isMatch){
+			 if(err) throw err;
+			 if(isMatch){
+				 return done(null, user);
+			 } else {
+				 return done(null, false, {message: 'Invalid password'});
+			 }
+		 });
+	 });
+}));
+  
+passport.serializeUser(function(user, done) {
+	done(null, user.id);
+});
+  
+passport.deserializeUser(function(id, done) {
+	User.getUserById(id, function(err, user) {
+	  done(err, user);
+	});
+});
+  
+router.post('/loginadmin',
+	passport.authenticate('local', {successRedirect:'/', failureRedirect:'/users/loginadmin',failureFlash: true}),
+	function(req, res) {
+	  res.redirect('/');
+});
+  
+router.get('/logoutadmin', function(req, res){
+	  req.logout();
+      console.log('salistes')  
+	  req.flash('success_msg', 'You are logged out');
+  
+	  res.redirect('/users/loginadmin');
+});
+
 module.exports = router;

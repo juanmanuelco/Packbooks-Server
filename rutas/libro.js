@@ -5,6 +5,7 @@ cloudinary = require('cloudinary'),
 original="";
 Libro = require('../modelos/libros');
 
+
 cloudinary.config({cloud_name: 'packbooks', api_key: '422278622363686', api_secret: 'JCX3Zpg0p8LkG-h6IiBpRZqZOjo'});
 
 function revisarNulo(busqueda){return (busqueda==undefined || busqueda==null || busqueda=='');}
@@ -32,7 +33,7 @@ router.post('/subida', (req, res) => {
                 fechaSub:new Date(),
                 categoria:req.body.categoria,
                 subidoPor:req.body.por,
-                libro:'/'+req.body.tipo+'/usuario'+req.body.por+'usuario'+req.body.nombre + '-' + req.body.autor + '-' + req.body.publicacion+'.pdf',
+                libro:'/'+req.body.tipo+'/'+req.body.nombre + '-' + req.body.autor + '-' + req.body.publicacion+'.pdf',
                 tipo:req.body.tipo
             });
             libroSchema.save((err)=>{
@@ -45,50 +46,46 @@ router.post('/subida', (req, res) => {
     })
 })
 
-router.post('/buscador',(req,res)=>{
-    arrayPalabras=new Array();
-    var palabras=(req.body.busqueda).split(" ");
-    for(var i=0;i<palabras.length;i++){
-        if(palabras[i]!='')
-            arrayPalabras.push(new RegExp (palabras[i],'i'))
+router.post('/buscador',function(req,res){
+    usuario=req.body.por;
+    tipo='privado';
+    query;
+    datoaBuscar=req.body.busqueda;
+    if(revisarNulo(usuario)) 
+        tipo='publico'
+    nuevoArray=new Array();
+    if(!revisarNulo(datoaBuscar)){
+        var palabras=datoaBuscar.split(" ");
+        for(var i=0;i<palabras.length;i++){
+            if(palabras[i]!='')
+                nuevoArray.push(new RegExp (palabras[i],'i'))
+        }
     }
-    if(req.body.tipo=='Publico'){
-        if(req.body.categoria=='Todas'){
-            query={$and:[{'tipo':'Publico'},
-                    {$or:[{nombre:{$in:arrayPalabras}},
-                    {autor:{$in:arrayPalabras}},
-                    {editorial:{$in:arrayPalabras}},
-                    {fechaPub:{$in:arrayPalabras}}
+    if(nuevoArray.length<1){
+        if(tipo=='publico')
+            query={'tipo':'publico'}
+        else
+            query={'tipo':'privado','subidoPor':usuario}
+    }else{
+        if(tipo=='publico'){
+            query={$and:[{'tipo':'publico'},
+                    {$or:[{nombre:{$in:nuevoArray}},
+                    {autor:{$in:nuevoArray}},
+                    {editorial:{$in:nuevoArray}},
+                    {fechaPub:{$in:nuevoArray}},
+                    {categoria:{$in:nuevoArray}}
                 ]}
             ]}; 
-        }else{
-            query={$and:[{'tipo':'Publico'},
-                    {$or:[{nombre:{$in:arrayPalabras}},
-                    {autor:{$in:arrayPalabras}},
-                    {editorial:{$in:arrayPalabras}},
-                    {fechaPub:{$in:arrayPalabras}}
-                ]}, {categoria:req.body.categoria}
-            ]}; 
+        }else{    
+            query={$and:[{'tipo':'publico'},{'subidoPor':usuario},
+                {$or:[{nombre:{$in:nuevoArray}},
+                {autor:{$in:nuevoArray}},
+                {editorial:{$in:nuevoArray}},
+                {fechaPub:{$in:nuevoArray}},
+                {categoria:{$in:nuevoArray}}
+            ]}
+        ]}; 
         }
-        
-    }else{
-        if(req.body.categoria=='Todas'){
-            query={$and:[{'tipo':'Privado'},{'subidoPor':req.body.por},
-                    {$or:[{nombre:{$in:arrayPalabras}},
-                    {autor:{$in:arrayPalabras}},
-                    {editorial:{$in:arrayPalabras}},
-                    {fechaPub:{$in:arrayPalabras}}
-                ]}]
-            } 
-        }else{
-            query={$and:[{'tipo':'Privado'},{'subidoPor':req.body.por},
-                    {$or:[{nombre:{$in:arrayPalabras}},
-                    {autor:{$in:arrayPalabras}},
-                    {editorial:{$in:arrayPalabras}},
-                    {fechaPub:{$in:arrayPalabras}}             
-                ]},{categoria:req.body.categoria} ]
-            } 
-        }       
     }
     listaResultados=new Array();
     Libro.find().where(query).exec((err,resp)=>{
@@ -96,7 +93,7 @@ router.post('/buscador',(req,res)=>{
             res.send('Error 1')
         else{
             if(resp=='')
-                res.send("Error 2")
+                res.send("nada")
             else{
                 for(var j=0;j<resp.length;j++){
                     listaResultados.push({
@@ -108,12 +105,12 @@ router.post('/buscador',(req,res)=>{
                         'libro':resp[j].libro
                     })
                 }
-                res.send(listaResultados)
+            res.send(listaResultados);
             }
         }
-    })
+	});
 });
-/*
+
 router.post('/categoria',(req,res)=>{
     categoria=req.body.categoria;
     Libro.find().where({$and:[{'categoria':categoria},{tipo:'Publico'}]}).exec((err,resp)=>{
@@ -137,5 +134,4 @@ router.post('/categoria',(req,res)=>{
         }
     });
 });
-*/
 module.exports = router;

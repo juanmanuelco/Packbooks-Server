@@ -1,0 +1,37 @@
+<div class="row">
+    <div class="col-lg-1 col-md-1"></div>
+    <div class="col-lg-10 col-md-10">
+        <h1 style="text-align:center">ADMIN Libros</h1>
+        <div class="table table-responsive">
+            <table class="table">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Autor</th>
+                    <th>Editorial</th>
+                    <th>Fecha de publicacion</th>
+                    <th>Categoria</th>
+                    <th>subido por</th>
+                    <th>Tipo</th>
+                    <th>Eliminar</th>
+                </tr>
+                {{#if libro}}{{#each libro}}
+                <tr>
+                    <td>{{this.nombre}}</td>
+                    <td>{{this.autor}}</td>
+                    <td>{{this.editorial}}</td>
+                    <td>{{this.fechaPub}}</td>
+                    <td>{{this.categoria}}</td>
+                    <td>{{this.subidoPor}}</td>
+                    <td>{{this.tipo}}</td>
+                    <td>
+                        <div>
+                            <button onclick="deleteLibro(event,this)" class="btn btn-danger">Eliminar</button>
+                        </div>
+                    </td>
+                </tr>
+                {{/each}}{{/if}}
+            </table>
+        </div>
+    </div>
+</div>
+<script src="../publico/scripts/adminLibro.js"></script>

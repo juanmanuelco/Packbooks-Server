@@ -7,7 +7,14 @@ Libro = require('../modelos/libros');
 
 
 cloudinary.config({cloud_name: 'packbooks', api_key: '422278622363686', api_secret: 'JCX3Zpg0p8LkG-h6IiBpRZqZOjo'});
-
+function cadenaAleatoria() {
+    longitud = 16
+    caracteres = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    cadena = ""
+    max = caracteres.length - 1
+    for (var i = 0; i < longitud; i++) { cadena += caracteres[Math.floor(Math.random() * (max + 1))]; }
+    return cadena;
+}
 function revisarNulo(busqueda){return (busqueda==undefined || busqueda==null || busqueda=='');}
 
 router.post('/subida', (req, res) => {
@@ -26,6 +33,7 @@ router.post('/subida', (req, res) => {
         }                 
         else {
             var libroSchema=new Libro({
+                id:cadenaAleatoria(),
                 nombre: req.body.nombre,
                 autor:req.body.autor,
                 editorial:req.body.editorial,
@@ -110,7 +118,33 @@ router.post('/buscador',function(req,res){
         }
 	});
 });
+<<<<<<< HEAD
 
+=======
+router.post('/mios', (req,res)=>{
+    Libro.find().where({subidoPor:req.body.por}).exec((error, libros)=>{
+        if(error)
+            res.send('Error 1')
+        else{
+            if(libros==null)
+                res.send('Error 2')
+            else
+                res.send(libros)
+        }
+    })
+})
+router.post('/eliminacion', (req,res)=>{
+    Libro.findOneAndRemove({id: req.body.id}, (error, respuesta)=>{
+        if(error)
+            res.send("Error 1")
+        else{
+            res.send(respuesta)
+        }       
+    })
+})
+
+/*
+>>>>>>> b21af99870436ecdf88292ac09e97d476a534b73
 router.post('/categoria',(req,res)=>{
     categoria=req.body.categoria;
     Libro.find().where({$and:[{'categoria':categoria},{tipo:'Publico'}]}).exec((err,resp)=>{
